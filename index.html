@@ -11,14 +11,20 @@
   <div class="brand">
     <span class="logo" aria-hidden="true">🇪🇺</span>
     <div>
-      <h1>Europe Capitals Trainer</h1>
-      <p class="tagline">45 countries · learn the map, then test yourself</p>
+      <h1 id="appTitle">Europe Capitals Trainer</h1>
+      <p class="tagline" id="tagline">45 countries · learn the map, then test yourself</p>
     </div>
   </div>
-  <nav class="tabs" role="tablist" aria-label="Modes">
-    <button class="tab is-active" role="tab" id="tab-learn" data-mode="learn" aria-selected="true">Learn map</button>
-    <button class="tab" role="tab" id="tab-quiz" data-mode="quiz" aria-selected="false">Quiz</button>
-  </nav>
+  <div class="head-right">
+    <nav class="tabs" role="tablist" aria-label="Modes">
+      <button class="tab is-active" role="tab" id="tab-learn" data-mode="learn" aria-selected="true">Learn map</button>
+      <button class="tab" role="tab" id="tab-quiz" data-mode="quiz" aria-selected="false">Quiz</button>
+    </nav>
+    <div class="langs" role="group" aria-label="Language / Jazyk">
+      <button class="lang is-active" data-lang="en" aria-pressed="true">EN</button>
+      <button class="lang" data-lang="cs" aria-pressed="false">CZ</button>
+    </div>
+  </div>
 </header>
 
 <main>
@@ -32,7 +38,7 @@
         <svg id="map" role="img" aria-label="Clickable map of Europe with capitals"></svg>
         <div class="map-hint" id="mapHint">Click a country</div>
       </div>
-      <p class="map-foot">Map shapes: Natural Earth (public domain)</p>
+      <p class="map-foot" id="mapCredit">Map shapes: Natural Earth (public domain)</p>
     </div>
 
     <aside class="panel">
@@ -52,16 +58,16 @@
     </div>
     <aside class="panel">
       <div class="card">
-        <h2 class="side-title">How it works</h2>
-        <ul class="tips">
-          <li>10 questions per round, mixed directions.</li>
+        <h2 class="side-title" id="howTitle">How it works</h2>
+        <ul class="tips" id="tips">
+          <li>Pick 10, 20, 30 or all questions per round.</li>
           <li><strong>Country → capital:</strong> find the main city.</li>
           <li><strong>Capital → country:</strong> find the state.</li>
           <li>Keys <kbd>1</kbd>–<kbd>4</kbd> answer, <kbd>Enter</kbd> continues.</li>
         </ul>
       </div>
       <div class="card weak">
-        <p class="muted small">New to the map? Open <strong>Learn map</strong> first and click through the countries once.</p>
+        <p class="muted small" id="sideHint">New to the map? Open <strong>Learn map</strong> first and click through the countries once.</p>
       </div>
     </aside>
   </section>

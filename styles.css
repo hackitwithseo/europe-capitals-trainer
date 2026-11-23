@@ -25,7 +25,7 @@ html, body { height: 100%; }
 
 html { -webkit-text-size-adjust: 100%; }
 
-button, .row, .opt, .tab, .btn {
+button, .row, .opt, .tab, .btn, .chip, .lang {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
@@ -75,12 +75,42 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.015em; }
 
 .tagline { margin: 0; font-size: 13px; color: var(--muted); }
 
+.head-right { display: flex; align-items: center; gap: 8px; }
+
 .tabs {
   display: flex;
   gap: 4px;
   padding: 4px;
   background: #e5ebf5;
   border-radius: 999px;
+}
+
+.langs {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: #e5ebf5;
+  border-radius: 999px;
+}
+
+.lang {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: 7px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.lang:hover { color: var(--ink); }
+
+.lang.is-active {
+  background: #0a1322;
+  color: #fff;
 }
 
 .tab {
@@ -409,6 +439,46 @@ main {
 
 .quiz-actions { margin-top: auto; padding-top: 22px; display: flex; justify-content: flex-end; }
 
+.chunk-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 20px;
+}
+
+.chunk-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chunk { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.chip {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 14px;
+  min-height: 44px;
+  border-radius: 11px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .14s, background .14s, color .14s;
+}
+
+.chip:hover { border-color: #b7cdf0; background: #f7faff; }
+
+.chip.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: #1e3a8a;
+}
+
 /* start / result screens */
 .hero { display: flex; flex-direction: column; justify-content: center; flex: 1; }
 
@@ -482,6 +552,9 @@ kbd {
   .opt { padding: 15px 14px; font-size: 16px; min-height: 56px; }
   .quiz-actions { padding-top: 18px; }
   .quiz-actions .btn, .hero .btn { width: 100%; padding: 15px 18px; font-size: 15px; }
+  .head-right { width: 100%; }
+  .head-right .tabs { flex: 1; }
+  .langs { flex: none; }
   .misses { max-height: none; }
   .score-big { font-size: 46px; }
   .tabs .tab { padding: 9px 16px; }
@@ -493,6 +566,8 @@ kbd {
   .logo { width: 36px; height: 36px; font-size: 18px; border-radius: 11px; }
   .tabs { width: 100%; }
   .tab { flex: 1; }
+  .chip { padding: 9px 12px; font-size: 13.5px; }
+  .chunk-row { gap: 8px; }
   .map-card { padding: 5px 5px 3px; }
   .map-hint { display: none; }
   .map-foot { text-align: center; }
