@@ -92,6 +92,19 @@
     XK: ['Kosovo', 'Priština'],
   };
 
+  // extra spellings accepted in typed mode: { n: [country], c: [capital] }
+  var ALIASES = {
+    BA: { n: ['bosnia'] },
+    CZ: { n: ['czech republic'] },
+    GB: { n: ['uk', 'united kingdom', 'great britain', 'britain'] },
+    LU: { n: ['luxemburg'], c: ['luxembourg', 'luxembourg city'] },
+    MD: { c: ['kishinev'] },
+    MK: { n: ['macedonia'] },
+    NL: { n: ['holland'] },
+    UA: { c: ['kiev'] },
+    VA: { n: ['vatican'], c: ['vatican'] }
+  };
+
   var STR = {
     en: {
       title: 'Europe Capitals Trainer',
@@ -115,12 +128,22 @@
         'Pick 10, 20, 30 or all questions per round.',
         '<strong>Country → capital:</strong> find the main city.',
         '<strong>Capital → country:</strong> find the state.',
+        'Choose <strong>Type the answer</strong> for the harder round.',
         'Keys <kbd>1</kbd>–<kbd>4</kbd> answer, <kbd>Enter</kbd> continues.'
       ],
       ready: 'Ready when you are',
       roundTitle: '{n} questions, {all} countries in the pool',
       roundTitleAll: 'All {n} countries in one round',
       roundText: 'Half ask for the capital city, half show you a capital and ask for the country. Four choices each time.',
+      roundTextType: 'Half ask for the capital city, half show you a capital and ask for the country. You write every answer — no options to help.',
+      answers: 'Answers',
+      modeChoice: 'Choose from 4',
+      modeType: 'Type the answer',
+      typeCityHint: 'Write the capital city.',
+      typeCountryHint: 'Write the country.',
+      typeCityPlaceholder: 'Capital city…',
+      typeCountryPlaceholder: 'Country…',
+      check: 'Check',
       questions: 'Questions',
       allN: 'All {n}',
       start: 'Start quiz',
@@ -164,12 +187,22 @@
         'Zvol 10, 20, 30 nebo všechny otázky v kole.',
         '<strong>Země → město:</strong> najdi hlavní město.',
         '<strong>Město → země:</strong> najdi zemi.',
+        'Vyber <strong>Napsat odpověď</strong> pro těžší kolo.',
         'Klávesy <kbd>1</kbd>–<kbd>4</kbd> odpovídají, <kbd>Enter</kbd> pokračuje.'
       ],
       ready: 'Můžeš začít',
       roundTitle: '{n} otázek ze všech {all} zemí',
       roundTitleAll: 'Všech {n} zemí v jednom kole',
       roundText: 'Polovina otázek se ptá na hlavní město, polovina ukáže město a ptá se na zemi. Vždy čtyři možnosti.',
+      roundTextType: 'Polovina otázek se ptá na hlavní město, polovina ukáže město a ptá se na zemi. Odpověď musíš napsat — žádné možnosti.',
+      answers: 'Odpovědi',
+      modeChoice: 'Vybrat ze 4',
+      modeType: 'Napsat odpověď',
+      typeCityHint: 'Napiš hlavní město.',
+      typeCountryHint: 'Napiš zemi.',
+      typeCityPlaceholder: 'Hlavní město…',
+      typeCountryPlaceholder: 'Země…',
+      check: 'Zkontrolovat',
       questions: 'Otázky',
       allN: 'Vše ({n})',
       start: 'Spustit kvíz',
@@ -518,6 +551,7 @@
   var quiz = null;
   var quizView = 'start';
   var quizLen = 10;
+  var quizStyle = 'choice';   // 'choice' = pick from four, 'type' = write the answer
   var quizBody = document.getElementById('quizBody');
 
   function makeQuestions(total) {
@@ -545,7 +579,7 @@
   function chunkControl() {
     var sizes = [10, 20, 30, 'all'];
     var html = '<div class="chunk-row"><span class="chunk-label">' + esc(t().questions) + '</span>' +
-      '<div class="chunk" role="group" aria-label="' + esc(t().questions) + '">';
+      '<div class="chunk len-chunk" role="group" aria-label="' + esc(t().questions) + '">';
     sizes.forEach(function (n) {
       var active = String(quizLen) === String(n);
       var label = n === 'all' ? fmt(t().allN, { n: TOTAL_COUNTRIES }) : String(n);
@@ -554,8 +588,31 @@
     return html + '</div></div>';
   }
 
+  function styleControl() {
+    var opts = [['choice', t().modeChoice], ['type', t().modeType]];
+    var html = '<div class="chunk-row"><span class="chunk-label">' + esc(t().answers) + '</span>' +
+      '<div class="chunk style-chunk" role="group" aria-label="' + esc(t().answers) + '">';
+    opts.forEach(function (o) {
+      html += '<button class="chip' + (quizStyle === o[0] ? ' is-active' : '') + '" data-style="' + o[0] + '">' +
+        esc(o[1]) + '</button>';
+    });
+    return html + '</div></div>';
+  }
+
+  function bindStyle() {
+    var row = quizBody.querySelector('.style-chunk');
+    if (!row) return;
+    row.addEventListener('click', function (e) {
+      var chip = e.target.closest('.chip');
+      if (!chip) return;
+      quizStyle = chip.dataset.style;
+      if (quizView === 'start') renderQuizStart();
+      else if (quizView === 'result') renderResult();
+    });
+  }
+
   function bindChunks() {
-    var row = quizBody.querySelector('.chunk');
+    var row = quizBody.querySelector('.len-chunk');
     if (!row) return;
     row.addEventListener('click', function (e) {
       var chip = e.target.closest('.chip');
@@ -578,18 +635,20 @@
       '<div class="hero">' +
         '<p class="kicker">' + esc(t().ready) + '</p>' +
         '<h2>' + esc(title) + '</h2>' +
-        '<p>' + esc(t().roundText) + '</p>' +
+        '<p>' + esc(quizStyle === 'type' ? t().roundTextType : t().roundText) + '</p>' +
+        styleControl() +
         chunkControl() +
         '<button class="btn primary" id="startQuiz">' + esc(t().start) + '</button>' +
       '</div>';
 
+    bindStyle();
     bindChunks();
     document.getElementById('startQuiz').addEventListener('click', newRound);
   }
 
   function newRound() {
     var total = Math.min(quizLen, TOTAL_COUNTRIES);
-    quiz = { questions: makeQuestions(total), i: 0, total: total, score: 0, answered: false, chosenIso: null, misses: [] };
+    quiz = { questions: makeQuestions(total), i: 0, total: total, score: 0, answered: false, chosenIso: null, misses: [], style: quizStyle, typedText: '' };
     renderQuestion();
   }
 
@@ -597,33 +656,140 @@
 
   function renderQuestion() {
     var q = quiz.questions[quiz.i];
+    var typed = quiz.style === 'type';
     quizView = 'question';
 
     var prompt = q.toCapital
       ? fmt(t().promptCapital, { c: cname(q.country) })
       : fmt(t().promptCountry, { c: ccap(q.country) });
 
+    var answerArea = typed
+      ? '<p class="q-sub">' + esc(q.toCapital ? t().typeCityHint : t().typeCountryHint) + '</p>' +
+        '<form class="typed-form" id="typedForm" autocomplete="off" novalidate>' +
+          '<input class="typed-input" id="typed" type="text" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="' +
+            esc(q.toCapital ? t().typeCityPlaceholder : t().typeCountryPlaceholder) + '" aria-label="' +
+            esc(q.toCapital ? t().typeCityPlaceholder : t().typeCountryPlaceholder) + '">' +
+          '<button class="btn primary" id="checkBtn" type="submit">' + esc(t().check) + '</button>' +
+        '</form>'
+      : '<p class="q-sub">' + esc(t().pickOne) + '</p>' +
+        '<div class="options" id="options">' +
+          q.options.map(function (c, i) {
+            return '<button class="opt" data-iso="' + c.iso + '"><span class="key">' + (i + 1) + '</span>' +
+              '<span>' + esc(optionText(q, c)) + '</span></button>';
+          }).join('') +
+        '</div>';
+
     quizBody.innerHTML =
       '<div class="quiz-top"><span>' + esc(q.toCapital ? t().c2c : t().cap2c) + '</span>' +
         '<span>' + esc(fmt(t().counter, { i: quiz.i + 1, n: quiz.total, s: quiz.score })) + '</span></div>' +
       '<div class="bar"><i style="width:' + ((quiz.answered ? quiz.i + 1 : quiz.i) / quiz.total * 100) + '%"></i></div>' +
       '<h2 class="q-prompt">' + esc(prompt) + '</h2>' +
-      '<p class="q-sub">' + esc(t().pickOne) + '</p>' +
-      '<div class="options" id="options">' +
-        q.options.map(function (c, i) {
-          return '<button class="opt" data-iso="' + c.iso + '"><span class="key">' + (i + 1) + '</span>' +
-            '<span>' + esc(optionText(q, c)) + '</span></button>';
-        }).join('') +
-      '</div>' +
+      answerArea +
       '<div class="feedback" id="feedback" role="status"></div>' +
       '<div class="quiz-actions" id="actions"></div>';
 
-    document.getElementById('options').addEventListener('click', function (e) {
-      var btn = e.target.closest('.opt');
-      if (btn) answer(btn.dataset.iso);
-    });
+    if (typed) {
+      document.getElementById('typedForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        checkTyped();
+      });
+      if (quiz.answered) paintTyped(q);
+      else {
+        var inp = document.getElementById('typed');
+        try { inp.focus({ preventScroll: true }); } catch (err) { inp.focus(); }
+      }
+    } else {
+      document.getElementById('options').addEventListener('click', function (e) {
+        var btn = e.target.closest('.opt');
+        if (btn) answer(btn.dataset.iso);
+      });
+      if (quiz.answered) paintAnswer(q);
+    }
+  }
 
-    if (quiz.answered) paintAnswer(q);
+  /* ---- typed answers ---- */
+
+  function norm(s) {
+    return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+      .replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim()
+      .replace(/^the /, '');
+  }
+
+  function acceptedAnswers(q) {
+    var c = q.country;
+    var list = [q.toCapital ? c.capital : c.name];
+    var cs = CS[c.iso];
+    if (cs) list.push(q.toCapital ? cs[1] : cs[0]);
+    var al = ALIASES[c.iso];
+    if (al) list = list.concat(q.toCapital ? (al.c || []) : (al.n || []));
+    return list;
+  }
+
+  function matchesTyped(q, typed) {
+    var v = norm(typed);
+    if (!v) return false;
+    return acceptedAnswers(q).some(function (a) {
+      var n = norm(a);
+      if (!n) return false;
+      if (n === v) return true;
+      // "Andorra" for "Andorra la Vella", "Luxembourg" for "Luxembourg City"
+      if (v.length >= 4 && n.indexOf(v) === 0) return true;
+      if (n.length >= 4 && v.indexOf(n) === 0 && v.length - n.length <= 6) return true;
+      return false;
+    });
+  }
+
+  function syncCounter() {
+    var top = document.querySelector('.quiz-top span:last-child');
+    if (top) top.textContent = fmt(t().counter, { i: quiz.i + 1, n: quiz.total, s: quiz.score });
+  }
+
+  function checkTyped() {
+    if (!quiz || quiz.answered) return;
+    var q = quiz.questions[quiz.i];
+    var inp = document.getElementById('typed');
+    var val = inp ? inp.value : '';
+    var right = matchesTyped(q, val);
+
+    quiz.answered = true;
+    quiz.typedText = val;
+    quiz.chosenIso = right ? q.country.iso : null;
+    if (right) quiz.score++;
+    else quiz.misses.push(q.country);
+
+    paintTyped(q);
+    syncCounter();
+  }
+
+  function paintTyped(q) {
+    var inp = document.getElementById('typed');
+    var btn = document.getElementById('checkBtn');
+    var right = quiz.chosenIso === q.country.iso;
+
+    if (inp) {
+      if (quiz.typedText != null) inp.value = quiz.typedText;
+      inp.disabled = true;
+      inp.classList.add(right ? 'is-correct' : 'is-wrong');
+    }
+    if (btn) btn.disabled = true;
+
+    var fb = document.getElementById('feedback');
+    if (fb) {
+      fb.className = 'feedback ' + (right ? 'good' : 'bad');
+      fb.textContent = fmt(right ? t().correct : t().wrong, { c: cname(q.country), cap: ccap(q.country) });
+    }
+
+    var bar = document.querySelector('.bar i');
+    if (bar) bar.style.width = ((quiz.i + 1) / quiz.total * 100) + '%';
+
+    var actions = document.getElementById('actions');
+    if (!actions) return;
+    var last = quiz.i === quiz.total - 1;
+    actions.innerHTML = '<button class="btn primary" id="nextQ">' +
+      esc(last ? t().seeResult : t().nextQ) + '</button>';
+    var nextBtn = document.getElementById('nextQ');
+    nextBtn.focus({ preventScroll: true });
+    nextBtn.addEventListener('click', next);
   }
 
   function paintAnswer(q) {
@@ -666,9 +832,7 @@
     else quiz.misses.push(q.country);
 
     paintAnswer(q);
-
-    var top = document.querySelector('.quiz-top span:last-child');
-    if (top) top.textContent = fmt(t().counter, { i: quiz.i + 1, n: quiz.total, s: quiz.score });
+    syncCounter();
   }
 
   function next() {
@@ -707,13 +871,14 @@
                 '<em>— ' + esc(ccap(c)) + '</em></li>';
             }).join('') + '</ul>'
           : '') +
-        '<div style="margin-top:22px">' + chunkControl() + '</div>' +
+        '<div style="margin-top:22px">' + styleControl() + chunkControl() + '</div>' +
         '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
           '<button class="btn primary" id="again">' + esc(t().playAgain) + '</button>' +
           '<button class="btn soft" id="toLearn">' + esc(t().reviewMap) + '</button>' +
         '</div>' +
       '</div>';
 
+    bindStyle();
     bindChunks();
     document.getElementById('again').addEventListener('click', newRound);
     document.getElementById('toLearn').addEventListener('click', function () { setMode('learn'); });
@@ -723,6 +888,7 @@
     if (mode !== 'quiz' || !quiz) return;
     if (e.target && /input|textarea/i.test(e.target.tagName)) return;
     if (e.target && e.target.tagName === 'BUTTON') return;
+    if (quiz.style === 'type') return;
     if (!quiz.answered && e.key >= '1' && e.key <= '4') {
       var q = quiz.questions[quiz.i];
       var opt = q.options[Number(e.key) - 1];
