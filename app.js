@@ -5,6 +5,7 @@
   var COUNTRIES = DATA.countries;
   var BY_ISO = {};
   COUNTRIES.forEach(function (c) { BY_ISO[c.iso] = c; });
+  var TOTAL_COUNTRIES = COUNTRIES.length;
 
   var K = Math.cos(52 * Math.PI / 180);
   var NS = 'http://www.w3.org/2000/svg';
@@ -39,6 +40,171 @@
 
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
+  /* ---------------- translations ---------------- */
+
+  // Czech names: [country, capital]
+  var CS = {
+    AL: ['Albánie', 'Tirana'],
+    AD: ['Andorra', 'Andorra la Vella'],
+    AT: ['Rakousko', 'Vídeň'],
+    BY: ['Bělorusko', 'Minsk'],
+    BE: ['Belgie', 'Brusel'],
+    BA: ['Bosna a Hercegovina', 'Sarajevo'],
+    BG: ['Bulharsko', 'Sofie'],
+    HR: ['Chorvatsko', 'Záhřeb'],
+    CY: ['Kypr', 'Nikósie'],
+    CZ: ['Česko', 'Praha'],
+    DK: ['Dánsko', 'Kodaň'],
+    EE: ['Estonsko', 'Tallinn'],
+    FI: ['Finsko', 'Helsinky'],
+    FR: ['Francie', 'Paříž'],
+    DE: ['Německo', 'Berlín'],
+    GR: ['Řecko', 'Athény'],
+    HU: ['Maďarsko', 'Budapešť'],
+    IS: ['Island', 'Reykjavík'],
+    IE: ['Irsko', 'Dublin'],
+    IT: ['Itálie', 'Řím'],
+    LV: ['Lotyšsko', 'Riga'],
+    LI: ['Lichtenštejnsko', 'Vaduz'],
+    LT: ['Litva', 'Vilnius'],
+    LU: ['Lucembursko', 'Lucemburk'],
+    MT: ['Malta', 'Valletta'],
+    MD: ['Moldavsko', 'Kišiněv'],
+    MC: ['Monako', 'Monako'],
+    ME: ['Černá Hora', 'Podgorica'],
+    NL: ['Nizozemsko', 'Amsterdam'],
+    MK: ['Severní Makedonie', 'Skopje'],
+    NO: ['Norsko', 'Oslo'],
+    PL: ['Polsko', 'Varšava'],
+    PT: ['Portugalsko', 'Lisabon'],
+    RO: ['Rumunsko', 'Bukurešť'],
+    RU: ['Rusko', 'Moskva'],
+    SM: ['San Marino', 'San Marino'],
+    RS: ['Srbsko', 'Bělehrad'],
+    SK: ['Slovensko', 'Bratislava'],
+    SI: ['Slovinsko', 'Lublaň'],
+    ES: ['Španělsko', 'Madrid'],
+    SE: ['Švédsko', 'Stockholm'],
+    CH: ['Švýcarsko', 'Bern'],
+    UA: ['Ukrajina', 'Kyjev'],
+    GB: ['Spojené království', 'Londýn'],
+    VA: ['Vatikán', 'Vatikán'],
+    XK: ['Kosovo', 'Priština'],
+  };
+
+  var STR = {
+    en: {
+      title: 'Europe Capitals Trainer',
+      h1: 'Europe Capitals Trainer',
+      tagline: '{n} countries · learn the map, then test yourself',
+      tabLearn: 'Learn map',
+      tabQuiz: 'Quiz',
+      europe: 'Europe',
+      wholeMap: 'Whole map',
+      clickCountry: 'Click a country',
+      clickAnother: 'Click another country',
+      credit: 'Map shapes: Natural Earth (public domain)',
+      pickCountry: 'Pick a country from the list or click the map to see its capital.',
+      capital: 'Capital',
+      cardHint: 'Now switch to <strong>Quiz</strong> and see if you remember it.',
+      search: 'Search country or capital…',
+      noMatch: 'No country matches that search.',
+      howTitle: 'How it works',
+      sideHint: 'New to the map? Open <strong>Learn map</strong> first and click through the countries once.',
+      tips: [
+        'Pick 10, 20, 30 or all questions per round.',
+        '<strong>Country → capital:</strong> find the main city.',
+        '<strong>Capital → country:</strong> find the state.',
+        'Keys <kbd>1</kbd>–<kbd>4</kbd> answer, <kbd>Enter</kbd> continues.'
+      ],
+      ready: 'Ready when you are',
+      roundTitle: '{n} questions, {all} countries in the pool',
+      roundTitleAll: 'All {n} countries in one round',
+      roundText: 'Half ask for the capital city, half show you a capital and ask for the country. Four choices each time.',
+      questions: 'Questions',
+      allN: 'All {n}',
+      start: 'Start quiz',
+      c2c: 'Country → capital',
+      cap2c: 'Capital → country',
+      counter: 'Question {i} / {n} · {s} right',
+      promptCapital: 'What is the capital of {c}?',
+      promptCountry: '{c} is the capital of which country?',
+      pickOne: 'Pick one answer.',
+      correct: 'Correct! {c} → {cap}.',
+      wrong: 'Not quite. {c} → {cap}.',
+      nextQ: 'Next question',
+      seeResult: 'See my result',
+      complete: 'Round complete',
+      perfect: 'Perfect round. You know Europe.',
+      strong: 'Strong round — almost all of them.',
+      middle: 'Getting there. Run through the misses once.',
+      weak: 'Keep going — the learn map will make these stick.',
+      playAgain: 'Play again',
+      reviewMap: 'Review the map'
+    },
+    cs: {
+      title: 'Trenér hlavních měst Evropy',
+      h1: 'Trenér hlavních měst Evropy',
+      tagline: '{n} zemí · nauč se mapu a otestuj se',
+      tabLearn: 'Mapa',
+      tabQuiz: 'Kvíz',
+      europe: 'Evropa',
+      wholeMap: 'Celá mapa',
+      clickCountry: 'Klikni na zemi',
+      clickAnother: 'Klikni na jinou zemi',
+      credit: 'Mapa: Natural Earth (volné dílo)',
+      pickCountry: 'Vyber zemi ze seznamu nebo klikni na mapu.',
+      capital: 'Hlavní město',
+      cardHint: 'Přepni na <strong>Kvíz</strong> a zjisti, jestli si to pamatuješ.',
+      search: 'Hledej zemi nebo město…',
+      noMatch: 'Žádná země neodpovídá hledání.',
+      howTitle: 'Jak to funguje',
+      sideHint: 'Neznáš mapu? Otevři nejdřív <strong>Mapu</strong> a projdi země.',
+      tips: [
+        'Zvol 10, 20, 30 nebo všechny otázky v kole.',
+        '<strong>Země → město:</strong> najdi hlavní město.',
+        '<strong>Město → země:</strong> najdi zemi.',
+        'Klávesy <kbd>1</kbd>–<kbd>4</kbd> odpovídají, <kbd>Enter</kbd> pokračuje.'
+      ],
+      ready: 'Můžeš začít',
+      roundTitle: '{n} otázek ze všech {all} zemí',
+      roundTitleAll: 'Všech {n} zemí v jednom kole',
+      roundText: 'Polovina otázek se ptá na hlavní město, polovina ukáže město a ptá se na zemi. Vždy čtyři možnosti.',
+      questions: 'Otázky',
+      allN: 'Vše ({n})',
+      start: 'Spustit kvíz',
+      c2c: 'Země → město',
+      cap2c: 'Město → země',
+      counter: 'Otázka {i} / {n} · {s} správně',
+      promptCapital: 'Jaké je hlavní město země {c}?',
+      promptCountry: 'Hlavní město {c} patří které zemi?',
+      pickOne: 'Vyber jednu odpověď.',
+      correct: 'Správně! {c} → {cap}.',
+      wrong: 'Bohužel. {c} → {cap}.',
+      nextQ: 'Další otázka',
+      seeResult: 'Zobrazit výsledek',
+      complete: 'Kolo dokončeno',
+      perfect: 'Perfektní kolo. Evropu umíš.',
+      strong: 'Silné kolo — skoro všechno.',
+      middle: 'Už to jde. Projdi si chyby.',
+      weak: 'Nevzdávej to — mapa ti to pomůže zapamatovat.',
+      playAgain: 'Hrát znovu',
+      reviewMap: 'Projít mapu'
+    }
+  };
+
+  var lang = (navigator.language || 'en').toLowerCase().indexOf('cs') === 0 ? 'cs' : 'en';
+
+  function t() { return STR[lang]; }
+  function cname(c) { return lang === 'cs' && CS[c.iso] ? CS[c.iso][0] : c.name; }
+  function ccap(c) { return lang === 'cs' && CS[c.iso] ? CS[c.iso][1] : c.capital; }
+
+  function fmt(str, vals) {
+    return str.replace(/\{(\w+)\}/g, function (m, k) {
+      return vals && vals[k] != null ? vals[k] : m;
+    });
+  }
+
   /* ---------------- projection ---------------- */
 
   var EXTRA = DATA.extra || [];      // neighbours drawn on the map but not quizzed
@@ -68,9 +234,9 @@
   var PAD = 14;
   var HOME = [-PAD, -PAD, W + PAD * 2, H + PAD * 2];
 
-  var geo = {};      // iso -> [[ [x,y], ... ], ...] in user units
-  var box = {};      // iso -> {x0,y0,x1,y1,w,h,area}
-  var capPt = {};    // iso -> [x,y]
+  var geo = {};
+  var box = {};
+  var capPt = {};
 
   LAND.forEach(function (c) {
     var rings = (raw[c.iso] || []).map(function (ring) {
@@ -122,23 +288,24 @@
     var html = '<g id="lands">';
     order.forEach(function (c) {
       var ghost = !BY_ISO[c.iso];
+      var title = ghost ? cname({ iso: c.iso, name: c.name }) : cname(c) + ' — ' + ccap(c);
       html += '<path class="country' + (ghost ? ' ghost' : '') + '"' +
         (ghost ? '' : ' data-iso="' + c.iso + '"') + ' d="' + pathFor(geo[c.iso]) + '">' +
-        '<title>' + esc(c.name) + (ghost || !c.capital ? '' : ' — ' + esc(c.capital)) + '</title></path>';
+        '<title>' + esc(title) + '</title></path>';
     });
     html += '</g><g id="dots">';
     COUNTRIES.forEach(function (c) {
       var p = capPt[c.iso];
       var micro = box[c.iso].area < 0.35 ? '1' : '0';
       html += '<circle class="cap-dot" data-iso="' + c.iso + '" data-micro="' + micro + '" cx="' +
-        p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="1.9"><title>' + esc(c.capital) + '</title></circle>';
+        p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="1.9"><title>' + esc(ccap(c)) + '</title></circle>';
     });
     html += '</g><g id="labels"></g>';
     svg.innerHTML = html;
 
     labelLayer = svg.querySelector('#labels');
     capDots = Array.prototype.slice.call(svg.querySelectorAll('.cap-dot'));
-    applyView(HOME);
+    applyView(curBox);
   }
 
   // px per map unit, so dots and labels keep a readable size on any screen
@@ -204,7 +371,7 @@
     capText.setAttribute('y', (cap[1] + 4.5 / up).toFixed(1));
     capText.style.fontSize = (12.5 / up).toFixed(2) + 'px';
     capText.style.strokeWidth = (3 / up).toFixed(2) + 'px';
-    capText.textContent = c.capital;
+    capText.textContent = ccap(c);
     labelLayer.appendChild(capText);
 
     if (!isMicro) {
@@ -217,7 +384,7 @@
       nameText.setAttribute('text-anchor', 'middle');
       nameText.style.fontSize = (13 / up).toFixed(2) + 'px';
       nameText.style.strokeWidth = (3 / up).toFixed(2) + 'px';
-      nameText.textContent = c.name;
+      nameText.textContent = cname(c);
       labelLayer.appendChild(nameText);
     }
   }
@@ -236,8 +403,8 @@
     renderCard(selected ? BY_ISO[selected] : null);
     applyView(selected && doZoom !== false ? frameFor(selected) : HOME);
     resetBtn.hidden = !selected;
-    mapTitle.textContent = selected ? BY_ISO[selected].name : 'Europe';
-    hintEl.textContent = selected ? 'Click another country' : 'Click a country';
+    mapTitle.textContent = selected ? cname(BY_ISO[selected]) : t().europe;
+    hintEl.textContent = selected ? t().clickAnother : t().clickCountry;
   }
 
   svg.addEventListener('click', function (e) {
@@ -250,13 +417,13 @@
     var el = e.target.closest('.country, .cap-dot');
     if (!el) return;
     var c = BY_ISO[el.getAttribute('data-iso')];
-    if (c) hintEl.textContent = c.name + ' · ' + c.capital;
+    if (c) hintEl.textContent = cname(c) + ' · ' + ccap(c);
   });
 
   svg.addEventListener('pointerout', function (e) {
     var el = e.target.closest('.country, .cap-dot');
     if (!el) return;
-    hintEl.textContent = selected ? 'Click another country' : 'Click a country';
+    hintEl.textContent = selected ? t().clickAnother : t().clickCountry;
   });
 
   resetBtn.addEventListener('click', function () { selectCountry(null); });
@@ -269,23 +436,24 @@
 
   function renderCard(c) {
     if (!c) {
-      learnCard.innerHTML = '<p class="muted">Pick a country from the list or click the map to see its capital.</p>';
+      learnCard.innerHTML = '<p class="muted">' + esc(t().pickCountry) + '</p>';
       return;
     }
     learnCard.innerHTML =
       '<span class="flag" aria-hidden="true">' + flag(c.iso) + '</span>' +
-      '<h2>' + esc(c.name) + '</h2>' +
-      '<p class="cap-line"><span>Capital</span><strong>' + esc(c.capital) + '</strong></p>' +
-      '<p class="hint">Now switch to <strong>Quiz</strong> and see if you remember it.</p>';
+      '<h2>' + esc(cname(c)) + '</h2>' +
+      '<p class="cap-line"><span>' + esc(t().capital) + '</span><strong>' + esc(ccap(c)) + '</strong></p>' +
+      '<p class="hint">' + t().cardHint + '</p>';
   }
 
   function buildList() {
     listEl.innerHTML = COUNTRIES.map(function (c) {
-      return '<button class="row" role="listitem" data-iso="' + c.iso + '" data-search="' +
-        esc(plain(c.name + ' ' + c.capital + ' ' + c.iso)) + '">' +
+      var cs = CS[c.iso] || ['', ''];
+      var needle = plain(c.name + ' ' + c.capital + ' ' + c.iso + ' ' + cs[0] + ' ' + cs[1]);
+      return '<button class="row" role="listitem" data-iso="' + c.iso + '" data-search="' + esc(needle) + '">' +
         '<span class="flag" aria-hidden="true">' + flag(c.iso) + '</span>' +
-        '<span class="r-name">' + esc(c.name) + '</span>' +
-        '<span class="r-cap">' + esc(c.capital) + '</span></button>';
+        '<span class="r-name">' + esc(cname(c)) + '</span>' +
+        '<span class="r-cap">' + esc(ccap(c)) + '</span></button>';
     }).join('');
   }
 
@@ -316,7 +484,7 @@
     if (!shown && !msg) {
       msg = document.createElement('p');
       msg.className = 'empty';
-      msg.textContent = 'No country matches that search.';
+      msg.textContent = t().noMatch;
       listEl.appendChild(msg);
     } else if (shown && msg) {
       msg.remove();
@@ -331,89 +499,120 @@
     mode = next;
     document.getElementById('view-learn').hidden = next !== 'learn';
     document.getElementById('view-quiz').hidden = next !== 'quiz';
-    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
-      var on = t.dataset.mode === next;
-      t.classList.toggle('is-active', on);
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (tab) {
+      var on = tab.dataset.mode === next;
+      tab.classList.toggle('is-active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
     });
     if (next === 'quiz') {
       if (!quiz) renderQuizStart();
     }
   }
 
-  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
-    t.addEventListener('click', function () { setMode(t.dataset.mode); });
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (tab) {
+    tab.addEventListener('click', function () { setMode(tab.dataset.mode); });
   });
 
   /* ---------------- quiz ---------------- */
 
-  var TOTAL = 10;
   var quiz = null;
+  var quizView = 'start';
+  var quizLen = 10;
   var quizBody = document.getElementById('quizBody');
 
-  function optionsFrom(answer, pool) {
-    var others = shuffle(pool.filter(function (v) { return v !== answer; })).slice(0, 3);
-    return shuffle([answer].concat(others));
-  }
-
-  function makeQuestions() {
-    var picks = shuffle(COUNTRIES).slice(0, TOTAL);
-    var allCapitals = COUNTRIES.map(function (c) { return c.capital; });
-    var allNames = COUNTRIES.map(function (c) { return c.name; });
+  function makeQuestions(total) {
+    var picks = shuffle(COUNTRIES.slice()).slice(0, total);
 
     return picks.map(function (c) {
       var toCapital = Math.random() < 0.5;
-      if (toCapital) {
-        return {
-          country: c,
-          sub: 'Country → capital',
-          prompt: 'What is the capital of ' + c.name + '?',
-          answer: c.capital,
-          options: optionsFrom(c.capital, allCapitals)
-        };
+      var answer = toCapital ? ccap(c) : cname(c);
+      var options = [c];
+      var seen = {};
+      seen[answer] = 1;
+
+      var pool = shuffle(COUNTRIES.filter(function (o) { return o.iso !== c.iso; }));
+      for (var i = 0; i < pool.length && options.length < 4; i++) {
+        var text = toCapital ? ccap(pool[i]) : cname(pool[i]);
+        if (seen[text]) continue;
+        seen[text] = 1;
+        options.push(pool[i]);
       }
-      return {
-        country: c,
-        sub: 'Capital → country',
-        prompt: c.capital + ' is the capital of which country?',
-        answer: c.name,
-        options: optionsFrom(c.name, allNames)
-      };
+
+      return { country: c, toCapital: toCapital, options: shuffle(options) };
+    });
+  }
+
+  function chunkControl() {
+    var sizes = [10, 20, 30, 'all'];
+    var html = '<div class="chunk-row"><span class="chunk-label">' + esc(t().questions) + '</span>' +
+      '<div class="chunk" role="group" aria-label="' + esc(t().questions) + '">';
+    sizes.forEach(function (n) {
+      var active = String(quizLen) === String(n);
+      var label = n === 'all' ? fmt(t().allN, { n: TOTAL_COUNTRIES }) : String(n);
+      html += '<button class="chip' + (active ? ' is-active' : '') + '" data-n="' + n + '">' + esc(label) + '</button>';
+    });
+    return html + '</div></div>';
+  }
+
+  function bindChunks() {
+    var row = quizBody.querySelector('.chunk');
+    if (!row) return;
+    row.addEventListener('click', function (e) {
+      var chip = e.target.closest('.chip');
+      if (!chip) return;
+      quizLen = chip.dataset.n === 'all' ? TOTAL_COUNTRIES : Number(chip.dataset.n);
+      if (quizView === 'start') renderQuizStart();
+      else if (quizView === 'result') renderResult();
     });
   }
 
   function renderQuizStart() {
     quiz = null;
+    quizView = 'start';
+    var isAll = quizLen >= TOTAL_COUNTRIES;
+    var title = isAll
+      ? fmt(t().roundTitleAll, { n: TOTAL_COUNTRIES })
+      : fmt(t().roundTitle, { n: quizLen, all: TOTAL_COUNTRIES });
+
     quizBody.innerHTML =
       '<div class="hero">' +
-        '<p class="kicker">Ready when you are</p>' +
-        '<h2>10 questions across Europe</h2>' +
-        '<p>Half ask for the capital city, half show you a capital and ask for the country. ' +
-        'You get four choices each time.</p>' +
-        '<button class="btn primary" id="startQuiz">Start quiz</button>' +
+        '<p class="kicker">' + esc(t().ready) + '</p>' +
+        '<h2>' + esc(title) + '</h2>' +
+        '<p>' + esc(t().roundText) + '</p>' +
+        chunkControl() +
+        '<button class="btn primary" id="startQuiz">' + esc(t().start) + '</button>' +
       '</div>';
+
+    bindChunks();
     document.getElementById('startQuiz').addEventListener('click', newRound);
   }
 
   function newRound() {
-    quiz = { questions: makeQuestions(), i: 0, score: 0, answered: false, misses: [] };
+    var total = Math.min(quizLen, TOTAL_COUNTRIES);
+    quiz = { questions: makeQuestions(total), i: 0, total: total, score: 0, answered: false, chosenIso: null, misses: [] };
     renderQuestion();
   }
 
+  function optionText(q, c) { return q.toCapital ? ccap(c) : cname(c); }
+
   function renderQuestion() {
     var q = quiz.questions[quiz.i];
-    quiz.answered = false;
+    quizView = 'question';
+
+    var prompt = q.toCapital
+      ? fmt(t().promptCapital, { c: cname(q.country) })
+      : fmt(t().promptCountry, { c: ccap(q.country) });
 
     quizBody.innerHTML =
-      '<div class="quiz-top"><span>' + esc(q.sub) + '</span>' +
-        '<span>Question ' + (quiz.i + 1) + ' / ' + TOTAL + ' · ' + quiz.score + ' right</span></div>' +
-      '<div class="bar"><i style="width:' + (quiz.i / TOTAL * 100) + '%"></i></div>' +
-      '<h2 class="q-prompt">' + esc(q.prompt) + '</h2>' +
-      '<p class="q-sub">Pick one answer.</p>' +
+      '<div class="quiz-top"><span>' + esc(q.toCapital ? t().c2c : t().cap2c) + '</span>' +
+        '<span>' + esc(fmt(t().counter, { i: quiz.i + 1, n: quiz.total, s: quiz.score })) + '</span></div>' +
+      '<div class="bar"><i style="width:' + ((quiz.answered ? quiz.i + 1 : quiz.i) / quiz.total * 100) + '%"></i></div>' +
+      '<h2 class="q-prompt">' + esc(prompt) + '</h2>' +
+      '<p class="q-sub">' + esc(t().pickOne) + '</p>' +
       '<div class="options" id="options">' +
-        q.options.map(function (v, i) {
-          return '<button class="opt" data-i="' + i + '"><span class="key">' + (i + 1) + '</span>' +
-            '<span>' + esc(v) + '</span></button>';
+        q.options.map(function (c, i) {
+          return '<button class="opt" data-iso="' + c.iso + '"><span class="key">' + (i + 1) + '</span>' +
+            '<span>' + esc(optionText(q, c)) + '</span></button>';
         }).join('') +
       '</div>' +
       '<div class="feedback" id="feedback" role="status"></div>' +
@@ -421,85 +620,101 @@
 
     document.getElementById('options').addEventListener('click', function (e) {
       var btn = e.target.closest('.opt');
-      if (btn) answer(Number(btn.dataset.i));
+      if (btn) answer(btn.dataset.iso);
     });
+
+    if (quiz.answered) paintAnswer(q);
   }
 
-  function answer(idx) {
-    if (!quiz || quiz.answered) return;
-    var q = quiz.questions[quiz.i];
-    if (idx < 0 || idx >= q.options.length) return;
-    quiz.answered = true;
-
-    var chosen = q.options[idx];
-    var right = chosen === q.answer;
-    if (right) quiz.score++;
-    else quiz.misses.push(q.country);
-
+  function paintAnswer(q) {
     Array.prototype.forEach.call(document.querySelectorAll('#options .opt'), function (btn) {
-      var v = q.options[Number(btn.dataset.i)];
+      var iso = btn.dataset.iso;
       btn.disabled = true;
-      if (v === q.answer) btn.classList.add('is-correct');
-      else if (v === chosen) btn.classList.add('is-wrong');
+      if (iso === q.country.iso) btn.classList.add('is-correct');
+      else if (iso === quiz.chosenIso) btn.classList.add('is-wrong');
       else btn.classList.add('is-dim');
     });
 
+    var right = quiz.chosenIso === q.country.iso;
     var fb = document.getElementById('feedback');
-    if (right) {
-      fb.className = 'feedback good';
-      fb.textContent = 'Correct! ' + q.country.name + ' → ' + q.country.capital + '.';
-    } else {
-      fb.className = 'feedback bad';
-      fb.textContent = 'Not quite. ' + q.country.name + ' → ' + q.country.capital + '.';
+    if (fb) {
+      fb.className = 'feedback ' + (right ? 'good' : 'bad');
+      fb.textContent = fmt(right ? t().correct : t().wrong, { c: cname(q.country), cap: ccap(q.country) });
     }
 
-    document.querySelector('.bar i').style.width = ((quiz.i + 1) / TOTAL * 100) + '%';
+    var bar = document.querySelector('.bar i');
+    if (bar) bar.style.width = ((quiz.i + 1) / quiz.total * 100) + '%';
 
     var actions = document.getElementById('actions');
-    var last = quiz.i === TOTAL - 1;
-    actions.innerHTML = '<button class="btn primary" id="nextQ">' + (last ? 'See my result' : 'Next question') + '</button>';
+    if (!actions) return;
+    var last = quiz.i === quiz.total - 1;
+    actions.innerHTML = '<button class="btn primary" id="nextQ">' +
+      esc(last ? t().seeResult : t().nextQ) + '</button>';
     var nextBtn = document.getElementById('nextQ');
     nextBtn.focus({ preventScroll: true });
     nextBtn.addEventListener('click', next);
   }
 
+  function answer(iso) {
+    if (!quiz || quiz.answered) return;
+    var q = quiz.questions[quiz.i];
+    if (!q.options.some(function (o) { return o.iso === iso; })) return;
+
+    quiz.answered = true;
+    quiz.chosenIso = iso;
+    if (iso === q.country.iso) quiz.score++;
+    else quiz.misses.push(q.country);
+
+    paintAnswer(q);
+
+    var top = document.querySelector('.quiz-top span:last-child');
+    if (top) top.textContent = fmt(t().counter, { i: quiz.i + 1, n: quiz.total, s: quiz.score });
+  }
+
   function next() {
     if (!quiz || !quiz.answered) return;
-    if (quiz.i === TOTAL - 1) { renderResult(); return; }
+    if (quiz.i === quiz.total - 1) { renderResult(); return; }
     quiz.i++;
+    quiz.answered = false;
+    quiz.chosenIso = null;
     renderQuestion();
   }
 
+  function verdictFor(score, total) {
+    if (score === total) return t().perfect;
+    if (score / total >= 0.8) return t().strong;
+    if (score / total >= 0.5) return t().middle;
+    return t().weak;
+  }
+
   function renderResult() {
-    var score = quiz.score;
+    quizView = 'result';
+    var quizRef = quiz;
     var missed = [];
     var seen = {};
-    quiz.misses.forEach(function (c) {
+    quizRef.misses.forEach(function (c) {
       if (!seen[c.iso]) { seen[c.iso] = 1; missed.push(c); }
     });
 
-    var verdict = score === TOTAL ? 'Perfect round. You know Europe.'
-      : score >= 8 ? 'Strong round — almost all of them.'
-      : score >= 5 ? 'Getting there. Run through the misses once.'
-      : 'Keep going — the learn map will make these stick.';
-
     quizBody.innerHTML =
       '<div class="hero">' +
-        '<p class="kicker">Round complete</p>' +
-        '<p class="score-big">' + score + '<small> / ' + TOTAL + '</small></p>' +
-        '<p style="margin-top:10px">' + esc(verdict) + '</p>' +
+        '<p class="kicker">' + esc(t().complete) + '</p>' +
+        '<p class="score-big">' + quizRef.score + '<small> / ' + quizRef.total + '</small></p>' +
+        '<p style="margin-top:10px">' + esc(verdictFor(quizRef.score, quizRef.total)) + '</p>' +
         (missed.length
           ? '<ul class="misses">' + missed.map(function (c) {
-              return '<li><span>' + flag(c.iso) + '</span><strong>' + esc(c.name) + '</strong>' +
-                '<em>— ' + esc(c.capital) + '</em></li>';
+              return '<li><span>' + flag(c.iso) + '</span><strong>' + esc(cname(c)) + '</strong>' +
+                '<em>— ' + esc(ccap(c)) + '</em></li>';
             }).join('') + '</ul>'
           : '') +
-        '<div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap">' +
-          '<button class="btn primary" id="again">Play again</button>' +
-          '<button class="btn soft" id="toLearn">Review the map</button>' +
+        '<div style="margin-top:22px">' + chunkControl() + '</div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+          '<button class="btn primary" id="again">' + esc(t().playAgain) + '</button>' +
+          '<button class="btn soft" id="toLearn">' + esc(t().reviewMap) + '</button>' +
         '</div>' +
       '</div>';
 
+    bindChunks();
     document.getElementById('again').addEventListener('click', newRound);
     document.getElementById('toLearn').addEventListener('click', function () { setMode('learn'); });
   }
@@ -509,11 +724,60 @@
     if (e.target && /input|textarea/i.test(e.target.tagName)) return;
     if (e.target && e.target.tagName === 'BUTTON') return;
     if (!quiz.answered && e.key >= '1' && e.key <= '4') {
-      answer(Number(e.key) - 1);
+      var q = quiz.questions[quiz.i];
+      var opt = q.options[Number(e.key) - 1];
+      if (opt) answer(opt.iso);
     } else if (quiz.answered && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       next();
     }
+  });
+
+  /* ---------------- language ---------------- */
+
+  function applyLanguage(next) {
+    lang = next;
+    document.documentElement.lang = lang;
+
+    document.title = t().title;
+    document.getElementById('appTitle').textContent = t().h1;
+    document.getElementById('tagline').textContent = fmt(t().tagline, { n: TOTAL_COUNTRIES });
+    document.getElementById('tab-learn').textContent = t().tabLearn;
+    document.getElementById('tab-quiz').textContent = t().tabQuiz;
+    document.getElementById('mapCredit').textContent = t().credit;
+    document.getElementById('howTitle').textContent = t().howTitle;
+    document.getElementById('sideHint').innerHTML = t().sideHint;
+    document.getElementById('tips').innerHTML = t().tips.map(function (li) { return '<li>' + li + '</li>'; }).join('');
+    resetBtn.textContent = t().wholeMap;
+    searchEl.placeholder = t().search;
+
+    Array.prototype.forEach.call(document.querySelectorAll('.lang'), function (b) {
+      var on = b.dataset.lang === lang;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+
+    buildMap();
+    buildList();
+
+    if (selected) selectCountry(selected, true);
+    else {
+      renderCard(null);
+      mapTitle.textContent = t().europe;
+      hintEl.textContent = t().clickCountry;
+      applyView(HOME);
+    }
+
+    var q = searchEl.value.trim();
+    if (q) searchEl.dispatchEvent(new Event('input'));
+
+    if (quizView === 'start') renderQuizStart();
+    else if (quizView === 'question') renderQuestion();
+    else if (quizView === 'result') renderResult();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.lang'), function (b) {
+    b.addEventListener('click', function () { applyLanguage(b.dataset.lang); });
   });
 
   /* ---------------- boot ---------------- */
@@ -522,6 +786,7 @@
   buildList();
   renderCard(null);
   setMode('learn');
+  applyLanguage(lang);
 
   var resizeTimer = null;
   window.addEventListener('resize', function () {
